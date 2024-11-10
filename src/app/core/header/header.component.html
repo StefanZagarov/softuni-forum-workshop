@@ -1,9 +1,11 @@
 <header>
     <div class="mini-navbar-wrap">
         <div class="logo-wrap">
-            <img src="/images/logo.png">
+            <img src="./images/logo.png">
             <p class="logo"> SoftUni Forum</p>
         </div>
+
+        @if(!isLogged){
         <div class="mini-navbar">
             <ul>
                 <li>
@@ -14,6 +16,8 @@
                 </li>
             </ul>
         </div>
+        }
+
     </div>
     <nav>
         <ul>

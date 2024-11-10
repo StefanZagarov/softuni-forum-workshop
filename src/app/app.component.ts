@@ -15,12 +15,4 @@ import { MainComponent } from './main/main.component';
 export class AppComponent
 {
   title = 'softuni-forum';
-
-  constructor(private http: HttpClient) { };
-
-  ngOnInit()
-  {
-    this.http.get(`https://softuniforum-default-rtdb.europe-west1.firebasedatabase.app/product/.json`)
-      .subscribe((x) => console.log(x));
-  };
 }
