@@ -11,3 +11,12 @@ export interface User
     updatedAt: string;
     _v: number;
 }
+
+export interface UserForAuth
+{
+    firstName: string;
+    email: string;
+    phoneNumber: string;
+    password: string;
+    id: string;
+}

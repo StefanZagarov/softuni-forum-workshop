@@ -9,7 +9,6 @@ import { Theme } from './types/theme';
 })
 export class ApiService
 {
-
   constructor(private http: HttpClient) { }
 
   getPosts(limit?: number)
@@ -37,4 +36,20 @@ export class ApiService
     // We expect an array of themes
     return this.http.get<Theme[]>(`${apiUrl}/themes`);
   }
+
+  getSingleTheme(themeId: string)
+  {
+    const { apiUrl } = environment;
+
+    return this.http.get<Theme>(`${apiUrl}/themes/${themeId}`);
+  };
+
+  createTheme(themeName: string, postText: string)
+  {
+    const { apiUrl } = environment;
+    // Payload is an object given when we make POST request
+    const payload = { themeName, postText };
+
+    return this.http.post<Theme>(`${apiUrl}/themes`, payload);
+  };
 }
