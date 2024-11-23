@@ -32,10 +32,8 @@ export class UserService
     }
   }
 
-  login(email: string, password: string)
+  login(email: string = "", password: string = "") // Default values are temporary until we learn to submit forms
   {
-    console.log(email, password);
-
     this.user = {
       firstName: `War`,
       email: `some.email@gmail.com`,
