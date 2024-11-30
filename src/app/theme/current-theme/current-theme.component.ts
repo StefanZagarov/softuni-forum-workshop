@@ -4,6 +4,7 @@ import { ApiService } from '../../api.service';
 import { Theme } from '../../types/theme';
 import { UserService } from '../../user/user.service';
 import { HomeComponent } from '../../home/home.component';
+import { ElapsedTimePipe } from '../../shared/pipes/elapsed-time.pipe';
 
 @Component({
   selector: 'app-current-theme',
@@ -24,9 +25,9 @@ export class CurrentThemeComponent implements OnInit
     return this.userService.isLoggedIn;
   };
 
-  get firstName(): string
+  get username(): string
   {
-    return this.userService.user?.firstName || ``;
+    return this.userService.user?.username || ``;
   }
 
   ngOnInit()

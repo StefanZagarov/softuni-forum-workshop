@@ -13,10 +13,9 @@ export class ApiService
 
   getPosts(limit?: number)
   {
-    const { apiUrl } = environment;
 
     // Creating dynamic url
-    let url = `${apiUrl}/posts`;
+    let url = `/api/posts`;
 
     if (limit)
     {
@@ -30,26 +29,23 @@ export class ApiService
 
   getThemes()
   {
-    const { apiUrl } = environment;
 
     // Returns `observable` object
     // We expect an array of themes
-    return this.http.get<Theme[]>(`${apiUrl}/themes`);
+    return this.http.get<Theme[]>(`/api/themes`);
   }
 
   getSingleTheme(themeId: string)
   {
-    const { apiUrl } = environment;
 
-    return this.http.get<Theme>(`${apiUrl}/themes/${themeId}`);
+    return this.http.get<Theme>(`/api/themes/${themeId}`);
   };
 
   createTheme(themeName: string, postText: string)
   {
-    const { apiUrl } = environment;
     // Payload is an object given when we make POST request
     const payload = { themeName, postText };
 
-    return this.http.post<Theme>(`${apiUrl}/themes`, payload);
+    return this.http.post<Theme>(`/api/themes`, payload);
   };
 }

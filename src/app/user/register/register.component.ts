@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { emailValidator } from '../../util/email.validator';
 import { DOMAINS } from '../../constants';
 import { matchPasswordsValidator } from '../../util/match-passwords.validator';
+import { UserService } from '../user.service';
 
 @Component({
   selector: 'app-register',
@@ -29,6 +30,9 @@ export class RegisterComponent
     })
   });
 
+  // Inject user service
+  constructor(private userService: UserService, private router: Router) { }
+
   isNotFilled(controlName: string)
   {
     return this.form.get(controlName)?.touched && this.form.get(controlName)?.errors?.['required'];
@@ -53,6 +57,15 @@ export class RegisterComponent
   {
     if (this.form.invalid) return;
 
-    console.log(this.form.value);
+    // Get the form data
+    const { username, email, tel, passwordGroup: { password, rePassword } = {} } = this.form.value;
+
+    // Send the data to the user service api
+    // We use ! to explicitly tell that it will have those values
+    this.userService.register(username!, email!, tel!, password!, rePassword!).subscribe(() =>
+    {
+      // After successful register, navigate to themes
+      this.router.navigate([`/themes`]);
+    });
   }
 };

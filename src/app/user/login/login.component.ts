@@ -20,9 +20,21 @@ export class LoginComponent
 
   login(form: NgForm)
   {
-    this.userService.login();
+    if (form.invalid)
+    {
+      console.log(`Invalid Login Form!`);
+      return;
+    }
 
-    // Redirect to home
-    this.router.navigate([`/home`]);
+    // Take the field data from the form
+    const { email, password } = form.value;
+
+    // Subscribe to get the data
+    // The login user service method returns UserForAuth type data
+    this.userService.login(email, password).subscribe(() =>
+    {
+      // We get the data mainly to know if the login has been successful, if it has been, then redirect to themes
+      this.router.navigate([`/themes`]);
+    });
   }
 }

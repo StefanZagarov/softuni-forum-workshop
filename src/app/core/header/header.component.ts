@@ -18,18 +18,18 @@ export class HeaderComponent
   }
 
   // Use the UserService to get the user object if it exists, and get its first name, otherwise we set it to an empty string
-  get firstName(): string
+  get username(): string
   {
-    return this.userService.user?.firstName || ``;
+    return this.userService.user?.username || ``;
   }
 
-  constructor(private userService: UserService, private router: Router)
-  {
-  };
+  constructor(private userService: UserService, private router: Router) { };
 
   logout()
   {
-    this.userService.logout();
-    this.router.navigate([`/home`]);
+    this.userService.logout().subscribe(() =>
+    {
+      this.router.navigate([`/login`]);
+    });
   }
 }

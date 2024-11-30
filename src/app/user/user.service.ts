@@ -1,55 +1,79 @@
 import { Injectable } from '@angular/core';
 import { UserForAuth } from '../types/user';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService
 {
+  // Behavioral subject for the user
+  // It will be initialised as null and will take the UserForAuthentication class when assigned later on
+  // We need this so we can use our observable later
+  private user$$ = new BehaviorSubject<UserForAuth | null>(null);
+
+  // Multicast the data and return it here
+  private user$ = this.user$$.asObservable();
+
   // Fake user key
   USER_KEY = `[user]`;
   user: UserForAuth | null = null;
 
   // Check if user is logged in
-  // !! will turn it to truthy or falsy value
+  // `!!` will turn it to truthy or falsy value
   get isLoggedIn(): boolean
   {
     return !!this.user;
   }
 
-  constructor()
+  constructor(private http: HttpClient)
   {
-    try
+    // If we get a user, set it to the Observable
+    this.user$.subscribe((user) =>
     {
-      // Get the user from the local storage, if exists
-      const lsUser = localStorage.getItem(this.USER_KEY) || ``;
-
-      this.user = JSON.parse(lsUser);
-    } catch (error)
-    {
-      this.user = null;
-      console.log(error);
-    }
+      this.user = user;
+    });
   }
 
-  login(email: string = "", password: string = "") // Default values are temporary until we learn to submit forms
+  // Similar to login, except we send more things and to /register url
+  register(username: string, email: string, tel: string, password: string, rePassword: string)
   {
-    this.user = {
-      firstName: `War`,
-      email: `some.email@gmail.com`,
-      phoneNumber: `456-456-456`,
-      password: `456456`,
-      id: `asdasd`
-    };
+    return this.http
+      .post<UserForAuth>(`/api/register`, { username, email, tel, password, rePassword })
+      .pipe(tap(user => this.user$$.next(user)));
+  }
 
-    // Save the key in the local storage
-    localStorage.setItem(this.USER_KEY, JSON.stringify(this.user));
+  login(email: string, password: string)
+  {
+    // Make a POST request using a UserForAuth type (model). The interceptor will fill the right (full) address, the email and password are a payload
+    // Returns an Observable
+    // We put a pipe to listen for the result of the request
+    // Tap listens for the data we receive - what we will get from the login api is a user which we will get from the POST request
+    // We want to save the user we will get to our BehaviorSubject. We save the user data so we can use it in other places
+    return this.http
+      .post<UserForAuth>(`/api/login`, { email, password })
+      .pipe(tap(user => this.user$$.next(user)));
   }
 
   logout()
   {
-    this.user = null;
+    // Payload required by the method, we send an empty one
+    return this.http.post(`/api/logout`, {})
+      .pipe(tap(user => this.user$$.next(null))); // We set the user as `null`
+  }
 
-    localStorage.removeItem(this.USER_KEY);
+  // Get profile data from the SoftUni's back-end API
+  getProfile()
+  {
+    return this.http
+      .get<UserForAuth>(`/api/users/profile`)
+      .pipe(tap(user => this.user$$.next(user)));
+  }
+
+  updateProfile(username: string, email: string, tel?: string)
+  {
+    return this.http.put<UserForAuth>(`/api/users/profile`, { username, email, tel })
+      .pipe(tap(user => this.user$$.next(user))); // the pipe updates the current logged in user data
   }
 }

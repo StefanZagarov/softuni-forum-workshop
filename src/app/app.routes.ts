@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
-import { ErrorComponent } from './error/error.component';
+import { PageNotFoundComponent } from './error/error.component';
 import { LoginComponent } from './user/login/login.component';
 import { RegisterComponent } from './user/register/register.component';
 import { ProfileComponent } from './user/profile/profile.component';
@@ -8,6 +8,7 @@ import { AddThemeComponent } from './theme/add-theme/add-theme.component';
 import { MainComponent } from './main/main.component';
 import { CurrentThemeComponent } from './theme/current-theme/current-theme.component';
 import { AuthGuard } from './guards/auth.guard';
+import { ErrorMsgComponent } from './core/error-msg/error-msg.component';
 
 export const routes: Routes = [
     // Home Page Redirect
@@ -28,11 +29,18 @@ export const routes: Routes = [
             { path: `:themeId`, component: CurrentThemeComponent } // if a themeId is added, then navigate to the details of that theme
         ]
     },
-    { path: `add-theme`, component: AddThemeComponent, canActivate: [AuthGuard] }, // Auth guard for non-logged in users
+    {
+        path: `add-theme`,
+        loadComponent: () => import(`./theme/add-theme/add-theme.component`).then(component => component.AddThemeComponent),
+        canActivate: [AuthGuard]
+    }, // Auth guard for non-logged in users
+
+    // Display error route
+    { path: `error`, component: ErrorMsgComponent },
 
     // Error On Invalid URL
     // 3. We create a link with the path and the component- first we must configure the page and only after that we can redirect to it (because of the wild card)
-    { path: `404`, component: ErrorComponent },
+    { path: `404`, component: PageNotFoundComponent },
     // 4. On any invalid path, redirect to 404 - wildcards must be at the very bottom (otherwise this redirect won't work)
     { path: `**`, redirectTo: `/404` },
 ];
