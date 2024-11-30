@@ -1,12 +1,12 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { UserForAuth } from '../types/user';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, tap } from 'rxjs';
+import { BehaviorSubject, Subscription, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
-export class UserService
+export class UserService implements OnDestroy
 {
   // Behavioral subject for the user
   // It will be initialised as null and will take the UserForAuthentication class when assigned later on
@@ -19,6 +19,7 @@ export class UserService
   // Fake user key
   USER_KEY = `[user]`;
   user: UserForAuth | null = null;
+  userSubscription: Subscription | null = null;
 
   // Check if user is logged in
   // `!!` will turn it to truthy or falsy value
@@ -30,7 +31,7 @@ export class UserService
   constructor(private http: HttpClient)
   {
     // If we get a user, set it to the Observable
-    this.user$.subscribe((user) =>
+    this.userSubscription = this.user$.subscribe((user) =>
     {
       this.user = user;
     });
@@ -75,5 +76,11 @@ export class UserService
   {
     return this.http.put<UserForAuth>(`/api/users/profile`, { username, email, tel })
       .pipe(tap(user => this.user$$.next(user))); // the pipe updates the current logged in user data
+  }
+
+  // Unsubscribe
+  ngOnDestroy(): void
+  {
+    this.userSubscription?.unsubscribe();
   }
 }
